@@ -1,0 +1,7 @@
+package de.powerradio.studio;
+import android.app.*;import android.os.*;import android.media.*;import android.widget.*;
+public class MainActivity extends Activity {
+static MediaPlayer player;static int active=-1;
+void toggle(int i){if(player!=null){player.release();player=null;if(active==i){active=-1;return;}}active=i;try{player=new MediaPlayer();player.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build());player.setDataSource("https://stream.laut.fm/"+StudioWidget.stations[i]);player.setOnPreparedListener(p->p.start());player.setOnErrorListener((p,a,b)->{active=-1;return true;});player.prepareAsync();}catch(Exception e){active=-1;Toast.makeText(this,"Stream nicht verfügbar",Toast.LENGTH_SHORT).show();}}
+@Override public void onCreate(Bundle b){super.onCreate(b);LinearLayout l=new LinearLayout(this);l.setOrientation(1);l.setPadding(24,40,24,24);TextView t=new TextView(this);t.setText("POWER RADIO Studio");t.setTextSize(26);l.addView(t);for(int i=0;i<2;i++){final int n=i;Button x=new Button(this);x.setText((i==0?"POWER RADIO":"POWER RADIO POP")+" • PLAY / STOP");x.setOnClickListener(v->toggle(n));l.addView(x);}setContentView(l);if(getIntent().hasExtra("station"))toggle(getIntent().getIntExtra("station",0));}
+}
